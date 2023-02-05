@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
    //Tab script
    const tabsContent = document.querySelectorAll('.tabcontent'),
-         tabLinks = document.querySelectorAll('.tabheader__item'),
-         tabLinksContainer = document.querySelector('.tabheader__items');
+      tabLinks = document.querySelectorAll('.tabheader__item'),
+      tabLinksContainer = document.querySelector('.tabheader__items');
 
    const hideTabContent = () => {
       tabsContent.forEach(item => {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
    tabLinksContainer.addEventListener('click', (ev) => {
       const target = ev.target;
       if (target && target.classList.contains('tabheader__item')) {
-         tabLinks.forEach((link, index)=> {
+         tabLinks.forEach((link, index) => {
             if (link == target) {
                hideTabContent();
                showTabContent(index);
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
          minutes = 0,
          seconds = 0;
       if (t > 0) {
-         days = (Math.floor(t / 1000/ 60/ 60/ 24));
-         hours = (Math.floor(t / 1000/ 60/ 60) % 24);
-         minutes = (Math.floor(t / 1000/ 60) % 60);
+         days = (Math.floor(t / 1000 / 60 / 60 / 24));
+         hours = (Math.floor(t / 1000 / 60 / 60) % 24);
+         minutes = (Math.floor(t / 1000 / 60) % 60);
          seconds = (Math.floor(t / 1000) % 60);
       }
       return {
@@ -94,9 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
    //Modal
 
    const modalBtns = document.querySelectorAll('[data-modal-btn'),
-         modal = document.querySelector('.modal'),
-         modalClose = document.querySelector('.modal__close'),
-         modalDialog = document.querySelector('.modal');
+      modal = document.querySelector('.modal'),
+      modalClose = document.querySelector('.modal__close'),
+      modalDialog = document.querySelector('.modal');
 
    let timeoutID;
 
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
    });
 
    document.addEventListener('keydown', (e) => {
-      if(e.code == 'Escape' && modal.classList.contains('show')) {
+      if (e.code == 'Escape' && modal.classList.contains('show')) {
          closeModal();
       }
    });
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const showByScroll = () => {
       if (document.documentElement.clientHeight +
-         document.documentElement.scrollTop === document.documentElement.scrollHeight){
+         document.documentElement.scrollTop === document.documentElement.scrollHeight) {
          showModal();
          document.removeEventListener('scroll', showByScroll);
       }
@@ -145,4 +145,70 @@ document.addEventListener('DOMContentLoaded', () => {
    };
 
    document.addEventListener('scroll', showByScroll);
+
+   //Add menu cards
+   const menuContainer = document.querySelector('.menu .container');
+
+   class Menu {
+      constructor(src, alt, title, text, price) {
+         this.src = src;
+         this.alt = alt;
+         this.title = title;
+         this.text = text;
+         this.price = price;
+      }
+   }
+
+   const addClassToElement = (element, ...classes) => {
+      classes.forEach(clas => {
+         element.classList.add(clas);
+      });
+   };
+
+   const addMenuItem = (place, menuItem, ...classes) => {
+      const div = document.createElement('div');
+      addClassToElement(div, ...classes);
+      
+      div.innerHTML = `
+      <img src=${menuItem.src} alt=${menuItem.alt}>
+         <h3 class="menu__item-subtitle">${menuItem.title}</h3>
+         <div class="menu__item-descr">${menuItem.text}</div>
+         <div class="menu__item-divider"></div>
+         <div class="menu__item-price">
+            <div class="menu__item-cost">Цена:</div>
+            <div class="menu__item-total"><span>${menuItem.price}</span> грн/день</div>
+      </div>`;
+
+      place.append(div);
+   };
+
+   addMenuItem(menuContainer, new Menu(
+      'img/tabs/vegy.jpg',
+      'vegy',
+      'Меню "Фитнес"',
+      'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+      229
+   ),
+   'menu__item'   
+   );
+
+   addMenuItem(menuContainer, new Menu(
+      'img/tabs/elite.jpg',
+      'elite',
+      'Меню “Премиум”',
+      'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+      550
+   ),
+   'menu__item'
+   );
+
+   addMenuItem(menuContainer, new Menu(
+      'img/tabs/post.jpg',
+      'post',
+      'Меню "Постное"',
+      'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+      430
+   ),
+   'menu__item'
+   );
 });
