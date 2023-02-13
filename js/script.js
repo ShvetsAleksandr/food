@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const showByScroll = () => {
       if (document.documentElement.clientHeight +
-         document.documentElement.scrollTop === document.documentElement.scrollHeight) {
+         document.documentElement.scrollTop === document.documentElement.scrollHeight - 1) {
          showModal();
          document.removeEventListener('scroll', showByScroll);
       }
@@ -210,9 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const forms = document.querySelectorAll('form');
    const message = {
-      loading: 'Загрузка...',
+      loading: 'img/form/spinner.svg',
       success: 'Спасибо. В скором времени мы с вами свяжемся!',
-      failure: 'img/form/spinner.svg',
+      failure: 'Что-то пошло не так(',
    };
 
    const showThanksModal = (message) => {
@@ -230,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.modal').append(thanksModal);
       setTimeout(() => {
          thanksModal.remove();
-         modalDialog.classList.add('show');
          modalDialog.classList.remove('hide');
          closeModal();
       }, 2000);
@@ -243,26 +242,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
          const statusMessage = document.createElement('img');
          statusMessage.src = message.loading;
-         form.before(statusMessage);
-
-         const req = new XMLHttpRequest();
-         req.open('POST', 'server.php');
+         statusMessage.style.cssText = `
+            display: block;
+            margin: 0 auto;
+         `;
+         form.after(statusMessage);
 
          const formData = new FormData(form);
-         req.send(formData);
-
-         req.addEventListener('load', () => {
-            if (req.status === 200) {
-               console.log(req.response);
-               statusMessage.remove();
-               showThanksModal(message.success);
-               form.reset();
-            }else {
-               showThanksModal(message.failure);
-               statusMessage.remove();
-            }
+         
+         /*
+         const obj = {};
+         formData.forEach( (value, key) =>{
+            obj[key] = value;
          });
+         const json = JSON.stringify(obj);
+         */
 
+         fetch('server.php', {
+            method: "POST",
+            body: formData,
+         }).then( () => {
+            showThanksModal(message.success);
+         }).catch( () => {
+            showThanksModal(message.failure);
+         }).finally( () => {
+            statusMessage.remove();
+            form.reset();
+         });
       });
    };
 
