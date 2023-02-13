@@ -94,9 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
    //Modal
 
    const modalBtns = document.querySelectorAll('[data-modal-btn'),
-      modal = document.querySelector('.modal'),
-      modalClose = document.querySelector('.modal__close'),
-      modalDialog = document.querySelector('.modal');
+      modal = document.querySelector('.modal');
 
    let timeoutID;
 
@@ -106,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timeoutID);
    };
 
-   timeoutID = setTimeout(showModal, 15000);
+   timeoutID = setTimeout(showModal, 50000);
 
    const closeModal = () => {
       modal.classList.remove('show');
@@ -119,18 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
    });
 
-   modalClose.addEventListener('click', (e) => {
-      closeModal();
-   });
-
    document.addEventListener('keydown', (e) => {
       if (e.code == 'Escape' && modal.classList.contains('show')) {
          closeModal();
       }
    });
 
-   modalDialog.addEventListener('click', (e) => {
-      if (modalDialog == e.target) {
+   modal.addEventListener('click', (e) => {
+      if (modal == e.target || e.target.classList.contains('modal__close')) {
          closeModal();
       }
    });
@@ -218,29 +212,54 @@ document.addEventListener('DOMContentLoaded', () => {
    const message = {
       loading: 'Загрузка...',
       success: 'Спасибо. В скором времени мы с вами свяжемся!',
-      failure: 'Что-то пошло не так (',
+      failure: 'img/form/spinner.svg',
+   };
+
+   const showThanksModal = (message) => {
+      const modalDialog = document.querySelector('.modal__dialog');
+      showModal();
+      const thanksModal = document.createElement('div');
+
+      thanksModal.classList.add('modal__dialog');
+      thanksModal.innerHTML = `
+         <div class="modal__content">
+            <div class="modal__title">${message}</div>
+         </div>
+      `;
+      modalDialog.classList.add('hide');
+      document.querySelector('.modal').append(thanksModal);
+      setTimeout(() => {
+         thanksModal.remove();
+         modalDialog.classList.add('show');
+         modalDialog.classList.remove('hide');
+         closeModal();
+      }, 2000);
+
    };
 
    const postData = (form) => {
       form.addEventListener('submit', (e) => {
          e.preventDefault();
 
-         const statusMessage = document.createElement('div');
-         statusMessage.textContent = message.loading;
-         form.append(statusMessage);
+         const statusMessage = document.createElement('img');
+         statusMessage.src = message.loading;
+         form.before(statusMessage);
 
          const req = new XMLHttpRequest();
          req.open('POST', 'server.php');
-         
+
          const formData = new FormData(form);
          req.send(formData);
 
          req.addEventListener('load', () => {
             if (req.status === 200) {
                console.log(req.response);
-               statusMessage.textContent = message.success;
+               statusMessage.remove();
+               showThanksModal(message.success);
+               form.reset();
             }else {
-               statusMessage.textContent = message.failure;
+               showThanksModal(message.failure);
+               statusMessage.remove();
             }
          });
 
@@ -250,4 +269,5 @@ document.addEventListener('DOMContentLoaded', () => {
    forms.forEach(form => {
       postData(form);
    });
+
 });
