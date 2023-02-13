@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
          const req = new XMLHttpRequest();
          req.open('POST', 'server.php');
+         
          const formData = new FormData(form);
          req.send(formData);
 
