@@ -23,39 +23,5 @@
     }
   ],
   "requests": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    },
-    {
-      "id": 3
-    },
-    {
-      "name": "Aleksandr",
-      "phone": "123",
-      "id": 4
-    },
-    {
-      "name": "Aleksandr",
-      "phone": "123",
-      "id": 5
-    },
-    {
-      "name": "Aleksandr",
-      "phone": "ggggg",
-      "id": 6
-    },
-    {
-      "name": "gggg",
-      "phone": "123",
-      "id": 7
-    },
-    {
-      "name": "Aleksandr",
-      "phone": "123",
-      "id": 8
-    }
   ]
 }
