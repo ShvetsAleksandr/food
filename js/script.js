@@ -323,7 +323,7 @@ window.addEventListener('DOMContentLoaded', function() {
          count === 3 ? hideSlidesAndShowOne(slides, 0) : hideSlidesAndShowOne(slides, count + 1);
       });
       prevBtn.addEventListener('click', () => {
-         count === 0 ? hideSlidesAndShowOne(slides, 3) : hideSlidesAndShowOne(slides, count - 1);
+         count === 0 ? hideSlidesAndShowOne(slides, slides.length - 1) : hideSlidesAndShowOne(slides, count - 1);
       });
    }
 
