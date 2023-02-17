@@ -315,8 +315,12 @@ window.addEventListener('DOMContentLoaded', function () {
       slidesWrapper = document.querySelector('.offer__slider-wrapper'),
       slidesField = document.querySelector('.offer__slider-inner'),
       width = slidesWrapper.clientWidth;
+
    let slideIndex = 1;
    let offset = 0;
+
+
+   slidesField.style.width = 100 * slides.length + '%';
 
    slides.forEach((slide) => {
       slide.style.width = width + 'px';
@@ -325,50 +329,75 @@ window.addEventListener('DOMContentLoaded', function () {
    total.innerHTML = getZero(slides.length);
    current.innerHTML = getZero(slideIndex);
 
-   nextBtn.addEventListener('click', () => {
+   const slider = document.querySelector('.offer__slider');
+
+   slider.style.position = 'relative';
+
+   const carouselIndicators = document.createElement('ol');
+
+   slides.forEach(slide => {
+      const dot = document.createElement('li');
+      dot.classList.add('dot');
+      carouselIndicators.append(dot);
+   });
+
+   carouselIndicators.classList.add('carousel-indicators');
+   carouselIndicators.style.position = 'absolute';
+   slider.append(carouselIndicators);
+
+
+   const dots = document.querySelectorAll('.dot');
+   dots[0].classList.add('active');
+
+   dots.forEach(dot => { //change slide after click on dots
+      dot.addEventListener('click', (e) => {
+         dots.forEach((dot, index) => {
+            dot.classList.remove('active');
+            if (dot === e.currentTarget) {
+               slideIndex = index + 1;
+               current.innerHTML = getZero(slideIndex);
+               offset = -(index * width);
+               slidesField.style.transform = `translateX(${(offset)}px)`;
+            }
+         });
+         e.target.classList.add('active');
+      });
+   });
+
+   const activeDots = (dots, index) => { // add active class to dot by index
+      dots.forEach(dot => {
+         dot.classList.remove('active');
+      })
+      dots[index - 1].classList.add('active');
+   };
+
+   nextBtn.addEventListener('click', () => { //click next button on slider
       if (slideIndex === slides.length) {
          slideIndex = 1;
          current.innerHTML = getZero(slideIndex);
          offset = 0;
          slidesField.style.transform = `translateX(${offset}px)`;
+         activeDots(dots, slideIndex);
       } else {
          slidesField.style.transform = `translateX(${offset -= width}px)`;
          slideIndex += 1;
          current.innerHTML = getZero(slideIndex);
+         activeDots(dots, slideIndex);
       }
    });
 
-   prevBtn.addEventListener('click', () => {
+   prevBtn.addEventListener('click', () => { //click prev button on slider
       if (slideIndex === 1) {
          slideIndex = slides.length;
          current.innerHTML = getZero(slideIndex);
          offset = -slidesField.clientWidth + width;
          slidesField.style.transform = `translateX(${(offset)}px)`;
+         activeDots(dots, slideIndex);
       } else {
          slidesField.style.transform = `translateX(${offset += width}px)`;
          slideIndex -= 1;
          current.innerHTML = getZero(slideIndex);
+         activeDots(dots, slideIndex);
       }
    });
-
-   /*
-   const hideSlidesAndShowOne = (slides, count = 2) => {
-      slides.forEach(slide => slide.classList.add('hide'));
-
-      current.innerHTML = getZero(count + 1);
-      total.querySelector('#total').innerHTML = getZero(slides.length);
-
-      slides[count].classList.remove('hide');
-
-      nextBtn.addEventListener('click', () => {
-         count === 3 ? hideSlidesAndShowOne(slides, 0) : hideSlidesAndShowOne(slides, count + 1);
-      });
-
-      prevBtn.addEventListener('click', () => {
-         count === 0 ? hideSlidesAndShowOne(slides, slides.length - 1) : hideSlidesAndShowOne(slides, count - 1);
-      });
-   }
-   */
-
-   //hideSlidesAndShowOne(slides);
 });
