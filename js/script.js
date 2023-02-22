@@ -1,98 +1,15 @@
-window.addEventListener('DOMContentLoaded', function () {
+import timer from './modules/timer';
+import getZero from './modules/getZero';
+import calc from './modules/calc';
+import tabs from './modules/tabs';
+import renderMenuCard from './modules/renderMenuCard';
 
-   // Tabs
+window.addEventListener('DOMContentLoaded', function() {
 
-   let tabs = document.querySelectorAll('.tabheader__item'),
-      tabsContent = document.querySelectorAll('.tabcontent'),
-      tabsParent = document.querySelector('.tabheader__items');
-
-   function hideTabContent() {
-
-      tabsContent.forEach(item => {
-         item.classList.add('hide');
-         item.classList.remove('show', 'fade');
-      });
-
-      tabs.forEach(item => {
-         item.classList.remove('tabheader__item_active');
-      });
-   }
-
-   function showTabContent(i = 0) {
-      tabsContent[i].classList.add('show', 'fade');
-      tabsContent[i].classList.remove('hide');
-      tabs[i].classList.add('tabheader__item_active');
-   }
-
-   hideTabContent();
-   showTabContent();
-
-   tabsParent.addEventListener('click', function (event) {
-      const target = event.target;
-      if (target && target.classList.contains('tabheader__item')) {
-         tabs.forEach((item, i) => {
-            if (target == item) {
-               hideTabContent();
-               showTabContent(i);
-            }
-         });
-      }
-   });
-
-   // Timer
-
-   const deadline = '2023-06-11';
-
-   function getTimeRemaining(endtime) {
-      const t = Date.parse(endtime) - Date.parse(new Date()),
-         days = Math.floor((t / (1000 * 60 * 60 * 24))),
-         seconds = Math.floor((t / 1000) % 60),
-         minutes = Math.floor((t / 1000 / 60) % 60),
-         hours = Math.floor((t / (1000 * 60 * 60) % 24));
-
-      return {
-         'total': t,
-         'days': days,
-         'hours': hours,
-         'minutes': minutes,
-         'seconds': seconds
-      };
-   }
-
-   function getZero(num) {
-      if (num >= 0 && num < 10) {
-         return '0' + num;
-      } else {
-         return num;
-      }
-   }
-
-   function setClock(selector, endtime) {
-
-      const timer = document.querySelector(selector),
-         days = timer.querySelector("#days"),
-         hours = timer.querySelector('#hours'),
-         minutes = timer.querySelector('#minutes'),
-         seconds = timer.querySelector('#seconds'),
-         timeInterval = setInterval(updateClock, 1000);
-
-      updateClock();
-
-      function updateClock() {
-         const t = getTimeRemaining(endtime);
-
-         days.innerHTML = getZero(t.days);
-         hours.innerHTML = getZero(t.hours);
-         minutes.innerHTML = getZero(t.minutes);
-         seconds.innerHTML = getZero(t.seconds);
-
-         if (t.total <= 0) {
-            clearInterval(timeInterval);
-         }
-      }
-   }
-
-   setClock('.timer', deadline);
+   tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
+   timer('.timer', '2023-06-11');
+   calc();
+   renderMenuCard(".menu .container");
 
    // Modal
 
@@ -128,8 +45,7 @@ window.addEventListener('DOMContentLoaded', function () {
       }
    });
 
-   const modalTimerId = setTimeout(openModal, 300000);
-   // Изменил значение, чтобы не отвлекало
+   const modalTimerId = setTimeout(openModal, 50000);
 
    function showModalByScroll() {
       if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -138,86 +54,6 @@ window.addEventListener('DOMContentLoaded', function () {
       }
    }
    window.addEventListener('scroll', showModalByScroll);
-
-   // Используем классы для создание карточек меню
-
-   class MenuCard {
-      constructor(src, alt, title, descr, price, parentSelector, ...classes) {
-         this.src = src;
-         this.alt = alt;
-         this.title = title;
-         this.descr = descr;
-         this.price = price;
-         this.classes = classes;
-         this.parent = document.querySelector(parentSelector);
-         this.transfer = 27;
-         this.changeToUAH();
-      }
-
-      changeToUAH() {
-         this.price = this.price * this.transfer;
-      }
-
-      render() {
-         const element = document.createElement('div');
-
-         if (this.classes.length === 0) {
-            this.classes = "menu__item";
-            element.classList.add(this.classes);
-         } else {
-            this.classes.forEach(className => element.classList.add(className));
-         }
-
-         element.innerHTML = `
-               <img src=${this.src} alt=${this.alt}>
-               <h3 class="menu__item-subtitle">${this.title}</h3>
-               <div class="menu__item-descr">${this.descr}</div>
-               <div class="menu__item-divider"></div>
-               <div class="menu__item-price">
-                  <div class="menu__item-cost">Цена:</div>
-                  <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-               </div>
-         `;
-         this.parent.append(element);
-      }
-   }
-
-   axios.get('http://localhost:3000/menu')
-      .then((data) => {
-         data.data.forEach(({ img, altimg, title, descr, price }) => {
-            new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-         });
-      })
-
-   //getResource('http://localhost:3000/menu')
-   //.then(data => {
-   //data.forEach(({img, altimg, title, descr, price}) => {
-   //new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-   // });
-   // });
-
-   // getResource('http://localhost:3000/menu')
-   //     .then(data => createCard(data));
-
-   // function createCard(data) {
-   //     data.forEach(({img, altimg, title, descr, price}) => {
-   //         const element = document.createElement('div');
-
-   //         element.classList.add("menu__item");
-
-   //         element.innerHTML = `
-   //             <img src=${img} alt=${altimg}>
-   //             <h3 class="menu__item-subtitle">${title}</h3>
-   //             <div class="menu__item-descr">${descr}</div>
-   //             <div class="menu__item-divider"></div>
-   //             <div class="menu__item-price">
-   //                 <div class="menu__item-cost">Цена:</div>
-   //                 <div class="menu__item-total"><span>${price}</span> грн/день</div>
-   //             </div>
-   //         `;
-   //         document.querySelector(".menu .container").append(element);
-   //     });
-   // }
 
    // Forms
 
@@ -244,15 +80,6 @@ window.addEventListener('DOMContentLoaded', function () {
       return await res.json();
    };
 
-   async function getResource(url) {
-      let res = await fetch(url);
-
-      if (!res.ok) {
-         throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-      }
-
-      return await res.json();
-   }
 
    function bindPostData(form) {
       form.addEventListener('submit', (e) => {
@@ -400,129 +227,4 @@ window.addEventListener('DOMContentLoaded', function () {
          activeDots(dots, slideIndex);
       }
    });
-
-   //Calc
-
-   const genderContainer = document.querySelectorAll('#gender div'),
-         chooseContainer = document.querySelectorAll('.calculating__choose_big div'),
-         calcResult = document.querySelector('.calculating__result span'),
-         inputs = document.querySelectorAll('.calculating__choose_medium input');
-
-   let gender, height, weight, age, ratio;
-
-   gender = localStorage.getItem('gender') ? localStorage.getItem('gender') : 'female';
-   ratio = localStorage.getItem('ratio') ? localStorage.getItem('ratio') : 1.375;
-
-   const showDefaultActivateItem = (gender, ratio) => {
-      if (gender === 'female') {
-         activateItem(genderContainer, 'calculating__choose-item_active', 0);
-      } else {
-         activateItem(genderContainer, 'calculating__choose-item_active', 1);
-      }
-      let i; 
-      switch(+ratio) {
-         case 1.2: i = 0;
-            break;
-         case 1.375: i = 1;
-            break;
-         case 1.55: i = 2
-            break;
-         case 1.725: i = 3;
-            break;
-      }
-
-      activateItem(chooseContainer, 'calculating__choose-item_active', i);
-   };
-
-   showDefaultActivateItem(gender, ratio);
-
-   const showCulcResult = (gender, height, width, age, ratio) => {
-      if (!gender || !height || !width || !age || !ratio) {
-         calcResult.innerHTML = '______';
-         return;
-      }
-
-      if (gender == 'female') {
-         calcResult.innerHTML = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
-      }
-      if (gender == 'male') {
-         calcResult.innerHTML = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
-      }
-   };
-
-   showCulcResult(gender, height, width, age, ratio);
-
-   function activateItem(itemList, activeClass, index){ 
-      itemList.forEach(item => {
-         item.classList.remove(activeClass);
-      });
-
-      itemList[index].classList.add(activeClass);
-   };
-
-   const listenerForItem = (itemList) => {
-      itemList.forEach( (item, index) => {
-         item.addEventListener('click', e => {
-            let i;;
-
-            if (item === e.currentTarget) {
-               i = index;
-               if(e.currentTarget.closest('#gender')) {
-                  gender = e.currentTarget.getAttribute('id');
-                  localStorage.setItem('gender', gender);
-               }
-
-               if(e.currentTarget.closest('.calculating__choose_big')) {
-                  const value = e.currentTarget.getAttribute('id');
-                  switch(value) {
-                     case 'low': ratio = 1.2;
-                        break;
-                     case 'small': ratio = 1.375;
-                        break;
-                     case 'medium': ratio = 1.55;
-                        break;
-                     case 'high': ratio = 1.725;
-                        break;
-                  }
-
-                  localStorage.setItem('ratio', ratio);
-               }
-            }
-            activateItem(itemList, 'calculating__choose-item_active', i);
-            showCulcResult(gender, height, weight, age, ratio);
-         });
-      })
-   };
-
-   const checkedInputOnlyNumber = (event) => {
-      if (event.target.value.match(/\D/g)) {
-         event.target.style.border = '1px solid red';
-      }else {
-         event.target.style.border = 'none';
-      }
-   };
-
-   const listenerForInput = (inputs) => {
-      inputs.forEach( input => {
-         input.addEventListener('input', e => {
-            if (e.target.getAttribute('id') === 'height'){
-               checkedInputOnlyNumber(e);
-               height = +e.target.value;
-            }
-            if (e.target.getAttribute('id') === 'weight'){
-               checkedInputOnlyNumber(e);
-               weight = +e.target.value;
-            }
-            if (e.target.getAttribute('id') === 'age'){
-               checkedInputOnlyNumber(e);
-               age = +e.target.value;
-            }
-            showCulcResult(gender, height, weight, age, ratio);
-         });
-      });
-   };
-
-   listenerForInput(inputs);
-   listenerForItem(genderContainer);
-   listenerForItem(chooseContainer);
 });
